@@ -2,7 +2,7 @@ import "./App.css";
 import { clear } from "./App";
 import React from "react";
 
-function Start(props) {
+export default function StartGame(props) {
   const move = (x) => {
     let jump = false,
       king = false,
@@ -567,5 +567,3 @@ function Start(props) {
     </>
   );
 }
-
-export default Start;

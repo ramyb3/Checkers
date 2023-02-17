@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Start from "./start";
+import StartGame from "./start";
 import emailjs from "emailjs-com";
 
 export default function App() {
@@ -157,7 +157,7 @@ export default function App() {
                 {row[1].map((i, index) => {
                   return (
                     <td key={index} className={i}>
-                      <Start
+                      <StartGame
                         location={tile}
                         callback={(data) => setTile(data)}
                         red={red}
