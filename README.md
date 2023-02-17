@@ -1,4 +1,4 @@
-# Checkeres Game for 2 players
+# Checkers Game for 2 players
 
 jusr run:
 
