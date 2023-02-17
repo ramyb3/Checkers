@@ -171,7 +171,7 @@ export default function App() {
                         turn={turn}
                         king={(data) => king(data)}
                         updateTurn={(data) => setTurn(data)}
-                        props={[row[0], i, 8 * row[0] + (index + 1)]}
+                        data={[row[0], i, 8 * row[0] + (index + 1)]}
                       />
                     </td>
                   );
