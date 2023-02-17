@@ -1,6 +1,6 @@
 # Checkers Game for 2 players
 
-jusr run:
+just run:
 
 ### `npm start`
 
