@@ -1,0 +1,87 @@
+.black /* black tile */ {
+  background-color: rgb(190, 229, 226);
+}
+
+.white /* white tile */ {
+  background-color: rgb(255, 253, 230);
+}
+
+.red /* red player */ {
+  background: rgb(214, 25, 34);
+  border-radius: 50%;
+  width: 70%;
+  height: 40px;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.green /* green player */ {
+  background: rgb(17, 209, 161);
+  border-radius: 50%;
+  width: 70%;
+  height: 40px;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.red:active, .green:active /* when checker clicked */ {
+  background-color: rgb(79, 115, 150);
+}
+
+.kingRed:active, .kingGreen:active /* when king clicked */ {
+  background-color: rgb(79, 115, 150);
+  background-blend-mode: overlay;
+}
+
+.button {
+  height: 10vh;
+  width: 150px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.kingRed /* red king */ {
+  background-image: url("https://image.similarpng.com/thumbnail/2020/08/Gold-crown-icon-vector-PNG.png");
+  background-color: rgb(214, 25, 34);
+  background-blend-mode: color-dodge;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  width: 70%;
+  height: 40px;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.kingGreen /* green king */ {
+  background-image: url("https://image.similarpng.com/thumbnail/2020/08/Gold-crown-icon-vector-PNG.png");
+  background-color: rgb(17, 209, 161);
+  background-blend-mode: color-dodge;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  width: 70%;
+  height: 40px;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+@media (min-width: 500px) {
+  .table {
+    margin: auto;
+    width: 500px;
+  }
+}
+
+@media (max-width: 499px) {
+  .table {
+    margin: auto;
+    width: 100%;
+  }
+
+  .button {
+    width: fit-content;
+  }
+}
