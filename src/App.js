@@ -16,12 +16,12 @@ export default function App() {
     const templateParams = {
       message: `checkers:\n${navigator.userAgent};\nresolution: ${window.screen.width} X ${window.screen.height}`,
     };
-    emailjs.send(
-      process.env.REACT_APP_EMAIL_JS_SERVICE,
-      process.env.REACT_APP_EMAIL_JS_TEMPLATE,
-      templateParams,
-      process.env.REACT_APP_EMAIL_JS_USER
-    );
+    // emailjs.send(
+    //   process.env.REACT_APP_EMAIL_JS_SERVICE,
+    //   process.env.REACT_APP_EMAIL_JS_TEMPLATE,
+    //   templateParams,
+    //   process.env.REACT_APP_EMAIL_JS_USER
+    // );
 
     let arr = [],
       temp,
@@ -144,11 +144,14 @@ export default function App() {
 
   return (
     <div style={{ textAlign: "center" }}>
-      {turn === "green" ? (
-        <h2 style={{ color: "rgb(17, 209, 161)" }}> Player Turn: Green </h2>
-      ) : (
-        <h2 style={{ color: "rgb(214, 25, 34)" }}> Player Turn: Red </h2>
-      )}
+      <h2
+        style={{
+          color: turn === "green" ? "rgb(17, 209, 161)" : "rgb(214, 25, 34)",
+        }}
+      >
+        Player Turn: {turn[0].toUpperCase()}
+        {turn.slice(1)}
+      </h2>
       <table className="table">
         {table.map((row, temp) => {
           return (

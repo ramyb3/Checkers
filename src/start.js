@@ -3,6 +3,34 @@ import { clear } from "./App";
 import React from "react";
 
 export default function StartGame(props) {
+  //check must taken jumps
+  const checkJumps = (mainPlayer, secondPlayer, color) => {
+    for (let i = 0; i < mainPlayer.length; i++) {
+      if (
+        (secondPlayer.includes(mainPlayer[i] + (color === "red" ? 9 : -9)) &&
+          !secondPlayer.includes(
+            mainPlayer[i] + (color === "red" ? 18 : -18)
+          ) &&
+          !mainPlayer.includes(mainPlayer[i] + (color === "red" ? 18 : -18)) &&
+          document.getElementById(
+            mainPlayer[i] + (color === "red" ? 18 : -18)
+          ) !== null) ||
+        (secondPlayer.includes(mainPlayer[i] + (color === "red" ? 7 : -7)) &&
+          !secondPlayer.includes(
+            mainPlayer[i] + (color === "red" ? 14 : -14)
+          ) &&
+          !mainPlayer.includes(mainPlayer[i] + (color === "red" ? 14 : -14)) &&
+          document.getElementById(
+            mainPlayer[i] + (color === "red" ? 14 : -14)
+          ) !== null)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   const move = (x) => {
     let jump = false,
       king = false,
@@ -23,21 +51,7 @@ export default function StartGame(props) {
         }
       }
 
-      //check must taken jumps
-      for (let i = 0; i < props.red.length; i++) {
-        if (
-          (props.green.includes(props.red[i] + 9) &&
-            !props.green.includes(props.red[i] + 18) &&
-            !props.red.includes(props.red[i] + 18) &&
-            document.getElementById(props.red[i] + 18) !== null) ||
-          (props.green.includes(props.red[i] + 7) &&
-            !props.green.includes(props.red[i] + 14) &&
-            !props.red.includes(props.red[i] + 14) &&
-            document.getElementById(props.red[i] + 14) !== null)
-        ) {
-          jump = true;
-        }
-      }
+      jump = checkJumps(props.red, props.green, props.turn);
 
       //check must taken jumps if there's king
       if (king) {
@@ -200,21 +214,7 @@ export default function StartGame(props) {
         }
       }
 
-      //check must taken jumps
-      for (let i = 0; i < props.green.length; i++) {
-        if (
-          (props.red.includes(props.green[i] - 9) &&
-            !props.red.includes(props.green[i] - 18) &&
-            !props.green.includes(props.green[i] - 18) &&
-            document.getElementById(props.green[i] - 18) !== null) ||
-          (props.red.includes(props.green[i] - 7) &&
-            !props.red.includes(props.green[i] - 14) &&
-            !props.green.includes(props.green[i] - 14) &&
-            document.getElementById(props.green[i] - 14) !== null)
-        ) {
-          jump = true;
-        }
-      }
+      jump = checkJumps(props.green, props.red, props.turn);
 
       //check must taken jumps if there's king
       if (king) {
