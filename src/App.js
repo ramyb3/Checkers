@@ -67,8 +67,6 @@ export default function App() {
     clear(); // reset optional moves
 
     if (moves.length > 0) {
-      let arr = [];
-
       // check kings
       if (moves[moves.length - 1][3]) {
         king([moves[moves.length - 1][0], moves[moves.length - 1][3]]);
@@ -79,41 +77,42 @@ export default function App() {
         }
       }
 
-      //red
       if (moves.length % 2 === 0) {
-        arr = red.filter((x) => x !== moves[moves.length - 1][1]);
-        arr.push(moves[moves.length - 1][0]);
-
-        setRed(arr);
-
-        // if was a jump move
-        if (moves[moves.length - 1][2] !== 0) {
-          arr = green;
-          arr.push(moves[moves.length - 1][1] - moves[moves.length - 1][2]);
-
-          setGreen(arr);
-        }
-
-        setMoves(moves.slice(0, moves.length - 1));
-        setTurn("red");
+        checkUndo("red");
       } else {
-        arr = green.filter((x) => x !== moves[moves.length - 1][1]);
-        arr.push(moves[moves.length - 1][0]);
-
-        setGreen(arr);
-
-        // if was a jump move
-        if (moves[moves.length - 1][2] !== 0) {
-          arr = red;
-          arr.push(moves[moves.length - 1][1] + moves[moves.length - 1][2]);
-
-          setRed(arr);
-        }
-
-        setMoves(moves.slice(0, moves.length - 1));
-        setTurn("green");
+        checkUndo("green");
       }
     }
+  };
+
+  const checkUndo = (color) => {
+    let arr = [];
+
+    arr = (color === "red" ? red : green).filter(
+      (x) => x !== moves[moves.length - 1][1]
+    );
+    arr.push(moves[moves.length - 1][0]);
+
+    if (color === "red") {
+      setRed(arr);
+    } else {
+      setGreen(arr);
+    }
+
+    // if was a jump move
+    if (moves[moves.length - 1][2] !== 0) {
+      arr = color === "red" ? green : red;
+      arr.push(moves[moves.length - 1][1] - moves[moves.length - 1][2]);
+
+      if (color === "red") {
+        setGreen(arr);
+      } else {
+        setRed(arr);
+      }
+    }
+
+    setMoves(moves.slice(0, moves.length - 1));
+    setTurn(color);
   };
 
   const king = (x) => {

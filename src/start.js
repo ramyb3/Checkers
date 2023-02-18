@@ -4,31 +4,25 @@ import React from "react";
 
 export default function StartGame(props) {
   //check must taken jumps
-  const checkJumps = (mainPlayer, secondPlayer, color) => {
-    for (let i = 0; i < mainPlayer.length; i++) {
+  const checkJumps = (kings, mainPlayer, secondPlayer, color) => {
+    const array = kings ? kings : mainPlayer;
+
+    for (let i = 0; i < array.length; i++) {
       if (
-        (secondPlayer.includes(mainPlayer[i] + (color === "red" ? 9 : -9)) &&
-          !secondPlayer.includes(
-            mainPlayer[i] + (color === "red" ? 18 : -18)
-          ) &&
-          !mainPlayer.includes(mainPlayer[i] + (color === "red" ? 18 : -18)) &&
-          document.getElementById(
-            mainPlayer[i] + (color === "red" ? 18 : -18)
-          ) !== null) ||
-        (secondPlayer.includes(mainPlayer[i] + (color === "red" ? 7 : -7)) &&
-          !secondPlayer.includes(
-            mainPlayer[i] + (color === "red" ? 14 : -14)
-          ) &&
-          !mainPlayer.includes(mainPlayer[i] + (color === "red" ? 14 : -14)) &&
-          document.getElementById(
-            mainPlayer[i] + (color === "red" ? 14 : -14)
-          ) !== null)
+        (secondPlayer.includes(array[i] + (color === "red" ? 9 : -9)) &&
+          !secondPlayer.includes(array[i] + (color === "red" ? 18 : -18)) &&
+          !mainPlayer.includes(array[i] + (color === "red" ? 18 : -18)) &&
+          document.getElementById(array[i] + (color === "red" ? 18 : -18)) !==
+            null) ||
+        (secondPlayer.includes(array[i] + (color === "red" ? 7 : -7)) &&
+          !secondPlayer.includes(array[i] + (color === "red" ? 14 : -14)) &&
+          !mainPlayer.includes(array[i] + (color === "red" ? 14 : -14)) &&
+          document.getElementById(array[i] + (color === "red" ? 14 : -14)) !==
+            null)
       ) {
         return true;
       }
     }
-
-    return false;
   };
 
   const move = (x) => {
@@ -51,24 +45,11 @@ export default function StartGame(props) {
         }
       }
 
-      jump = checkJumps(props.red, props.green, props.turn);
+      jump = checkJumps(false, props.red, props.green, props.turn) || jump;
 
       //check must taken jumps if there's king
       if (king) {
-        for (let i = 0; i < kingCount.length; i++) {
-          if (
-            (props.green.includes(kingCount[i] - 9) &&
-              !props.green.includes(kingCount[i] - 18) &&
-              !props.red.includes(kingCount[i] - 18) &&
-              document.getElementById(kingCount[i] - 18) !== null) ||
-            (props.green.includes(kingCount[i] - 7) &&
-              !props.green.includes(kingCount[i] - 14) &&
-              !props.red.includes(kingCount[i] - 14) &&
-              document.getElementById(kingCount[i] - 14) !== null)
-          ) {
-            jump = true;
-          }
-        }
+        jump = checkJumps(kingCount, props.red, props.green, "green") || jump;
       }
 
       // jump to right
@@ -214,24 +195,11 @@ export default function StartGame(props) {
         }
       }
 
-      jump = checkJumps(props.green, props.red, props.turn);
+      jump = checkJumps(false, props.green, props.red, props.turn) || jump;
 
       //check must taken jumps if there's king
       if (king) {
-        for (let i = 0; i < kingCount.length; i++) {
-          if (
-            (props.red.includes(kingCount[i] + 9) &&
-              !props.red.includes(kingCount[i] + 18) &&
-              !props.green.includes(kingCount[i] + 18) &&
-              document.getElementById(kingCount[i] + 18) !== null) ||
-            (props.red.includes(kingCount[i] + 7) &&
-              !props.red.includes(kingCount[i] + 14) &&
-              !props.green.includes(kingCount[i] + 14) &&
-              document.getElementById(kingCount[i] + 14) !== null)
-          ) {
-            jump = true;
-          }
-        }
+        jump = checkJumps(kingCount, props.green, props.red, "red") || jump;
       }
 
       // jump to right
