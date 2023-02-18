@@ -23,44 +23,43 @@ export default function App() {
     //   process.env.REACT_APP_EMAIL_JS_USER
     // );
 
-    let arr = [],
-      temp,
-      check1 = [],
-      check2 = [];
+    let tableArray = [],
+      firstHalf = [],
+      secondHalf = [];
 
     for (let i = 0; i < 8; i++) {
-      temp = [];
+      let row = [];
 
       for (let j = 0; j < 8; j++) {
         //even tiles
         if (i % 2 === 0) {
           if (j % 2 === 0) {
-            temp.push("black");
+            row.push("black");
           } else {
-            temp.push("white");
+            row.push("white");
           }
         } else {
           if (j % 2 === 0) {
-            temp.push("white");
+            row.push("white");
           } else {
-            temp.push("black");
+            row.push("black");
           }
         }
 
-        if (i < 3 && temp[temp.length - 1] === "black") {
-          check1.push(8 * i + (j + 1));
+        if (i < 3 && row[row.length - 1] === "black") {
+          firstHalf.push(8 * i + (j + 1));
         }
-        if (i > 4 && temp[temp.length - 1] === "black") {
-          check2.push(8 * i + (j + 1));
+        if (i > 4 && row[row.length - 1] === "black") {
+          secondHalf.push(8 * i + (j + 1));
         }
       }
 
-      arr.push([i, temp]);
+      tableArray.push([i, row]);
     }
 
-    setTable(arr);
-    setRed(check1);
-    setGreen(check2);
+    setTable(tableArray);
+    setRed(firstHalf);
+    setGreen(secondHalf);
   }, []);
 
   // every move
@@ -82,7 +81,7 @@ export default function App() {
   }, [moves]);
 
   const undo = () => {
-    clear(); // reset optional moves
+    clear();
 
     if (moves.length > 0) {
       // check kings
@@ -135,12 +134,8 @@ export default function App() {
     setTurn(color);
   };
 
-  const king = (x) => {
-    if (x[1] === "red") {
-      document.getElementById(x[0]).className = "kingRed";
-    } else {
-      document.getElementById(x[0]).className = "kingGreen";
-    }
+  const king = (player) => {
+    document.getElementById(player[0]).className = `king ${player[1] === "red" ? "redColor" : "greenColor"}`;
   };
 
   return (
@@ -153,26 +148,26 @@ export default function App() {
         Player Turn: {turn[0].toUpperCase()}
         {turn.slice(1)}
       </h2>
-      <table className="table">
-        {table.map((row, temp) => {
+      <table>
+        {table.map((row, index1) => {
           return (
-            <tbody key={temp}>
+            <tbody key={index1}>
               <tr>
-                {row[1].map((i, index) => {
+                {row[1].map((i, index2) => {
                   return (
-                    <td key={index} className={i}>
+                    <td key={index2} className={i}>
                       <StartGame
+                        data={[row[0], i, 8 * row[0] + (index2 + 1)]}
                         location={tile}
-                        callback={(data) => setTile(data)}
                         red={red}
                         green={green}
-                        updateRed={(data) => setRed(data)}
-                        updateGreen={(data) => setGreen(data)}
-                        undo={(data) => setMoves([...moves, data])}
                         turn={turn}
-                        king={(data) => king(data)}
-                        updateTurn={(data) => setTurn(data)}
-                        data={[row[0], i, 8 * row[0] + (index + 1)]}
+                        updateTile={(resp) => setTile(resp)}
+                        updateRed={(resp) => setRed(resp)}
+                        updateGreen={(resp) => setGreen(resp)}
+                        updateKings={(resp) => king(resp)}
+                        updateTurn={(resp) => setTurn(resp)}
+                        updateMoves={(resp) => setMoves([...moves, resp])}
                       />
                     </td>
                   );

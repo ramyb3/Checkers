@@ -9,7 +9,7 @@ export default function StartGame(props) {
       (props.data[2] > 57 && props.turn === "red") ||
       (props.data[2] < 8 && props.turn === "green")
     ) {
-      props.king([props.data[2], props.turn]);
+      props.updateKings([props.data[2], props.turn]);
     }
   };
 
@@ -28,11 +28,22 @@ export default function StartGame(props) {
     return arr;
   };
 
+  const checkTiles = (index, data, color) => {
+    if ((index > 57 && color === "red") || (index < 8 && color === "green")) {
+      document.getElementById(index).className = `king ${color === "red" ? "redColor" : "greenColor"}`;
+    } else {
+      document.getElementById(index).className =
+        document.getElementById(data).className;
+    }
+
+    document.getElementById(index).style.backgroundColor = "black";
+  };
+
   const player = () => {
     const resp = checkKings(
       false,
       [],
-      props.turn === "red" ? "kingRed" : "kingGreen"
+      `king ${props.turn === "red" ? "redColor" : "greenColor"}`
     );
     const mainPlayer = props.turn === "red" ? props.red : props.green;
     const secondPlayer = props.turn === "red" ? props.green : props.red;
@@ -50,9 +61,9 @@ export default function StartGame(props) {
 
     // if this checker is a king
     if (
-      (document.getElementById(props.data[2]).className === "kingRed" &&
+      (document.getElementById(props.data[2]).className === "king redColor" &&
         props.turn === "red") ||
-      (document.getElementById(props.data[2]).className === "kingGreen" &&
+      (document.getElementById(props.data[2]).className === "king greenColor" &&
         props.turn === "green")
     ) {
       jumps(props.data[2], mainPlayer, secondPlayer, oppositeTurn, true);
@@ -61,7 +72,7 @@ export default function StartGame(props) {
       moves(jump, props.data[2], mainPlayer, secondPlayer, oppositeTurn, false);
     }
 
-    props.callback(props.data[2]);
+    props.updateTile(props.data[2]);
   };
 
   //check must taken jumps
@@ -119,15 +130,7 @@ export default function StartGame(props) {
       secondPlayer.includes(move) &&
       !secondPlayer.includes(jump)
     ) {
-      if ((jump > 57 && color === "red") || (jump < 8 && color === "green")) {
-        document.getElementById(jump).className =
-          color === "red" ? "kingRed" : "kingGreen";
-      } else {
-        document.getElementById(jump).className =
-          document.getElementById(data).className;
-      }
-
-      document.getElementById(jump).style.backgroundColor = "black";
+      checkTiles(jump, data, color);
     }
   };
 
@@ -143,24 +146,16 @@ export default function StartGame(props) {
       document.getElementById(move) !== null &&
       !secondPlayer.includes(move)
     ) {
-      if ((move > 57 && color === "red") || (move < 8 && color === "green")) {
-        document.getElementById(move).className =
-          color === "red" ? "kingRed" : "kingGreen";
-      } else {
-        document.getElementById(move).className =
-          document.getElementById(data).className;
-      }
-
-      document.getElementById(move).style.backgroundColor = "black";
+      checkTiles(move,data, color);
     }
   };
 
   // add move to moves array
-  const addMove = (className, check) => {
+  const addMove = (className, steps) => {
     if (document.getElementById(props.location).className === className) {
-      props.undo([props.location, props.data[2], check, props.turn]);
+      props.updateMoves([props.location, props.data[2], steps, props.turn]);
     } else {
-      props.undo([props.location, props.data[2], check]);
+      props.updateMoves([props.location, props.data[2], steps]);
     }
   };
 
@@ -176,41 +171,41 @@ export default function StartGame(props) {
     if (method === 0) {
       // moving player
       let arr = [],
-        check = 0;
+        steps = 0;
 
-      kingMaker(props.turn === "red" ? "kingRed" : "kingGreen");
+      kingMaker(`king ${props.turn === "red" ? "redColor" : "greenColor"}`);
 
-      let temp = (props.turn === "red" ? props.red : props.green).filter(
+      let newArray = (props.turn === "red" ? props.red : props.green).filter(
         (i) => i !== props.location
       );
-      temp.push(props.data[2]);
+      newArray.push(props.data[2]);
 
       if (props.data[2] - props.location === 18) {
         arr = jumpCalc(arr, props.data[2] - 9);
-        check = props.turn === "red" ? 9 : -9;
+        steps = props.turn === "red" ? 9 : -9;
       }
       if (props.location - props.data[2] === 18) {
         arr = jumpCalc(arr, props.data[2] + 9);
-        check = props.turn === "red" ? -9 : 9;
+        steps = props.turn === "red" ? -9 : 9;
       }
       if (props.data[2] - props.location === 14) {
         arr = jumpCalc(arr, props.data[2] - 7);
-        check = props.turn === "red" ? 7 : -7;
+        steps = props.turn === "red" ? 7 : -7;
       }
       if (props.location - props.data[2] === 14) {
         arr = jumpCalc(arr, props.data[2] + 7);
-        check = props.turn === "red" ? -7 : 7;
+        steps = props.turn === "red" ? -7 : 7;
       }
 
-      addMove(props.turn === "red" ? "kingRed" : "kingGreen", check);
+      addMove(`king ${props.turn === "red" ? "redColor" : "greenColor"}`, steps);
 
       if (props.turn === "red") {
-        props.updateRed(temp);
+        props.updateRed(newArray);
       } else {
-        props.updateGreen(temp);
+        props.updateGreen(newArray);
       }
 
-      props.callback(0);
+      props.updateTile(0);
       props.updateTurn(props.turn === "red" ? "green" : "red");
     }
   };
@@ -227,9 +222,7 @@ export default function StartGame(props) {
                   className={
                     document.getElementById(props.data[2]) !== null &&
                     document.getElementById(props.data[2]).className ===
-                      "kingRed"
-                      ? "kingRed"
-                      : "red"
+                      "king redColor" ? "king redColor" : "checker redColor"
                   }
                   onClick={() => move(1)}
                 />
@@ -243,9 +236,7 @@ export default function StartGame(props) {
                   className={
                     document.getElementById(props.data[2]) !== null &&
                     document.getElementById(props.data[2]).className ===
-                      "kingGreen"
-                      ? "kingGreen"
-                      : "green"
+                      "king greenColor" ? "king greenColor" : "checker greenColor"
                   }
                   onClick={() => move(2)}
                 />
