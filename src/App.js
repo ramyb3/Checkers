@@ -114,7 +114,7 @@ export default function App() {
       setGreen(arr);
     }
 
-    // if was a jump move
+    // if there was a jump move
     if (moves[moves.length - 1][2] !== 0) {
       arr = color === "red" ? green : red;
       arr.push(

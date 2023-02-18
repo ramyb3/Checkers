@@ -41,12 +41,12 @@ export default function StartGame(props) {
   };
 
   const jumps = (data, mainPlayer, secondPlayer, color, direction) => {
-    const jump = direction
-      ? data + (color === "red" ? 14 : -14)
-      : data + (color === "red" ? 18 : -18);
-    const move = direction
-      ? data + (color === "red" ? 7 : -7)
-      : data + (color === "red" ? 9 : -9);
+    const jump =
+      (direction ? (color === "red" ? 14 : -14) : color === "red" ? 18 : -18) +
+      data;
+    const move =
+      (direction ? (color === "red" ? 7 : -7) : color === "red" ? 9 : -9) +
+      data;
 
     if (
       !mainPlayer.includes(move) &&
@@ -68,9 +68,9 @@ export default function StartGame(props) {
   };
 
   const moves = (jump, data, mainPlayer, secondPlayer, color, direction) => {
-    const move = direction
-      ? data + (color === "red" ? 7 : -7)
-      : data + (color === "red" ? 9 : -9);
+    const move =
+      (direction ? (color === "red" ? 7 : -7) : color === "red" ? 9 : -9) +
+      data;
 
     if (
       !jump &&
@@ -87,6 +87,25 @@ export default function StartGame(props) {
       }
 
       document.getElementById(move).style.backgroundColor = "black";
+    }
+  };
+
+  const kingMaker = (props, className) => {
+    if (
+      document.getElementById(props.location).className === className ||
+      (props.data[2] > 57 && props.turn === "red") ||
+      (props.data[2] < 8 && props.turn === "green")
+    ) {
+      props.king([props.data[2], props.turn]);
+    }
+  };
+
+  // add move to moves array
+  const addMove = (props, className, check) => {
+    if (document.getElementById(props.location).className === className) {
+      props.undo([props.location, props.data[2], check, props.turn]);
+    } else {
+      props.undo([props.location, props.data[2], check]);
     }
   };
 
@@ -165,12 +184,7 @@ export default function StartGame(props) {
 
       //red player
       if (props.red.includes(props.location)) {
-        if (
-          document.getElementById(props.location).className === "kingRed" ||
-          props.data[2] > 57
-        ) {
-          props.king([props.data[2], "red"]);
-        }
+        kingMaker(props, "kingRed");
 
         temp = props.red.filter((i) => i !== props.location);
         temp.push(props.data[2]);
@@ -215,13 +229,7 @@ export default function StartGame(props) {
           check = -9;
         }
 
-        // if this checker is king
-        if (document.getElementById(props.location).className === "kingRed") {
-          props.undo([props.location, props.data[2], check, "red"]);
-        } else {
-          props.undo([props.location, props.data[2], check]);
-        }
-
+        addMove(props, "kingRed", check);
         props.updateRed(temp);
         props.callback(0);
         props.updateTurn("green");
@@ -229,12 +237,7 @@ export default function StartGame(props) {
 
       //green player
       if (props.green.includes(props.location)) {
-        if (
-          document.getElementById(props.location).className === "kingGreen" ||
-          props.data[2] < 8
-        ) {
-          props.king([props.data[2], "green"]);
-        }
+        kingMaker(props, "kingGreen");
 
         temp = props.green.filter((i) => i !== props.location);
         temp.push(props.data[2]);
@@ -279,13 +282,7 @@ export default function StartGame(props) {
           check = -9;
         }
 
-        // if this checker is king
-        if (document.getElementById(props.location).className === "kingGreen") {
-          props.undo([props.location, props.data[2], check, "green"]);
-        } else {
-          props.undo([props.location, props.data[2], check]);
-        }
-
+        addMove(props, "kingGreen", check);
         props.updateGreen(temp);
         props.callback(0);
         props.updateTurn("red");
