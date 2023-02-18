@@ -135,7 +135,9 @@ export default function App() {
   };
 
   const king = (player) => {
-    document.getElementById(player[0]).className = `king ${player[1] === "red" ? "redColor" : "greenColor"}`;
+    document.getElementById(player[0]).className = `king ${
+      player[1] === "red" ? "redColor" : "greenColor"
+    }`;
   };
 
   return (

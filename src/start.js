@@ -30,7 +30,9 @@ export default function StartGame(props) {
 
   const checkTiles = (index, data, color) => {
     if ((index > 57 && color === "red") || (index < 8 && color === "green")) {
-      document.getElementById(index).className = `king ${color === "red" ? "redColor" : "greenColor"}`;
+      document.getElementById(index).className = `king ${
+        color === "red" ? "redColor" : "greenColor"
+      }`;
     } else {
       document.getElementById(index).className =
         document.getElementById(data).className;
@@ -146,7 +148,7 @@ export default function StartGame(props) {
       document.getElementById(move) !== null &&
       !secondPlayer.includes(move)
     ) {
-      checkTiles(move,data, color);
+      checkTiles(move, data, color);
     }
   };
 
@@ -197,7 +199,10 @@ export default function StartGame(props) {
         steps = props.turn === "red" ? -7 : 7;
       }
 
-      addMove(`king ${props.turn === "red" ? "redColor" : "greenColor"}`, steps);
+      addMove(
+        `king ${props.turn === "red" ? "redColor" : "greenColor"}`,
+        steps
+      );
 
       if (props.turn === "red") {
         props.updateRed(newArray);
@@ -219,11 +224,13 @@ export default function StartGame(props) {
               {props.red.includes(props.data[2]) ? (
                 <Player
                   id={props.data[2]}
-                  className={
+                  className={`${
                     document.getElementById(props.data[2]) !== null &&
                     document.getElementById(props.data[2]).className ===
-                      "king redColor" ? "king redColor" : "checker redColor"
-                  }
+                      "king redColor"
+                      ? "king"
+                      : "checker"
+                  } redColor`}
                   onClick={() => move(1)}
                 />
               ) : null}
@@ -233,11 +240,13 @@ export default function StartGame(props) {
               {props.green.includes(props.data[2]) ? (
                 <Player
                   id={props.data[2]}
-                  className={
+                  className={`${
                     document.getElementById(props.data[2]) !== null &&
                     document.getElementById(props.data[2]).className ===
-                      "king greenColor" ? "king greenColor" : "checker greenColor"
-                  }
+                      "king greenColor"
+                      ? "king"
+                      : "checker"
+                  } greenColor`}
                   onClick={() => move(2)}
                 />
               ) : null}
