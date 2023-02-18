@@ -3,7 +3,6 @@ import { clear } from "./App";
 import React from "react";
 
 export default function StartGame(props) {
-  //check must taken jumps
   const checkJumps = (kings, mainPlayer, secondPlayer, color) => {
     const array = kings ? kings : mainPlayer;
 
@@ -25,6 +24,20 @@ export default function StartGame(props) {
     }
   };
 
+  const checkKings = (king, kingCount, className) => {
+    for (let i = 1; i < 65; i++) {
+      if (
+        document.getElementById(i) !== null &&
+        document.getElementById(i).className === className
+      ) {
+        king = true;
+        kingCount.push(i);
+      }
+    }
+
+    return [king, kingCount];
+  };
+
   const move = (x) => {
     let jump = false,
       king = false,
@@ -35,19 +48,13 @@ export default function StartGame(props) {
     // red player
     if (x === 1 && props.turn === "red") {
       //check kings
-      for (let i = 1; i < 65; i++) {
-        if (
-          document.getElementById(i) !== null &&
-          document.getElementById(i).className === "kingRed"
-        ) {
-          king = true;
-          kingCount.push(i);
-        }
-      }
+      const resp = checkKings(king, kingCount, "kingRed");
+      king = resp[0] || king;
+      kingCount = resp[1] || kingCount;
 
+      //check must taken jumps
       jump = checkJumps(false, props.red, props.green, props.turn) || jump;
 
-      //check must taken jumps if there's king
       if (king) {
         jump = checkJumps(kingCount, props.red, props.green, "green") || jump;
       }
@@ -185,19 +192,13 @@ export default function StartGame(props) {
     // green player
     if (x === 2 && props.turn === "green") {
       //check kings
-      for (let i = 1; i < 65; i++) {
-        if (
-          document.getElementById(i) !== null &&
-          document.getElementById(i).className === "kingGreen"
-        ) {
-          king = true;
-          kingCount.push(i);
-        }
-      }
+      const resp = checkKings(king, kingCount, "kingGreen");
+      king = resp[0] || king;
+      kingCount = resp[1] || kingCount;
 
+      //check must taken jumps
       jump = checkJumps(false, props.green, props.red, props.turn) || jump;
 
-      //check must taken jumps if there's king
       if (king) {
         jump = checkJumps(kingCount, props.green, props.red, "red") || jump;
       }
@@ -475,56 +476,44 @@ export default function StartGame(props) {
           <>
             <>
               {props.red.includes(props.data[2]) ? (
-                <>
-                  {document.getElementById(props.data[2]) !== null &&
-                  document.getElementById(props.data[2]).className ===
-                    "kingRed" ? (
-                    <span
-                      id={props.data[2]}
-                      className="kingRed"
-                      onClick={() => move(1)}
-                    ></span>
-                  ) : (
-                    <span
-                      id={props.data[2]}
-                      className="red"
-                      onClick={() => move(1)}
-                    ></span>
-                  )}
-                </>
+                <Player
+                  id={props.data[2]}
+                  className={
+                    document.getElementById(props.data[2]) !== null &&
+                    document.getElementById(props.data[2]).className ===
+                      "kingRed"
+                      ? "kingRed"
+                      : "red"
+                  }
+                  onClick={() => move(1)}
+                />
               ) : null}
             </>
 
             <>
               {props.green.includes(props.data[2]) ? (
-                <>
-                  {document.getElementById(props.data[2]) !== null &&
-                  document.getElementById(props.data[2]).className ===
-                    "kingGreen" ? (
-                    <span
-                      id={props.data[2]}
-                      className="kingGreen"
-                      onClick={() => move(2)}
-                    ></span>
-                  ) : (
-                    <span
-                      id={props.data[2]}
-                      className="green"
-                      onClick={() => move(2)}
-                    ></span>
-                  )}
-                </>
+                <Player
+                  id={props.data[2]}
+                  className={
+                    document.getElementById(props.data[2]) !== null &&
+                    document.getElementById(props.data[2]).className ===
+                      "kingGreen"
+                      ? "kingGreen"
+                      : "green"
+                  }
+                  onClick={() => move(2)}
+                />
               ) : null}
             </>
 
             <>
               {!props.green.includes(props.data[2]) &&
               !props.red.includes(props.data[2]) ? (
-                <span
+                <Player
                   id={props.data[2]}
-                  onClick={() => move(0)}
                   style={{ display: "inline-flex", height: "40px" }}
-                ></span>
+                  onClick={() => move(0)}
+                />
               ) : null}
             </>
           </>
@@ -533,5 +522,16 @@ export default function StartGame(props) {
         ) // white tile
       }
     </>
+  );
+}
+
+function Player(props) {
+  return (
+    <span
+      id={props.id}
+      onClick={props.onClick}
+      className={props.className}
+      style={props.style}
+    ></span>
   );
 }
