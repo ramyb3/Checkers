@@ -188,13 +188,8 @@ export default function App() {
           paddingTop: "15px",
         }}
       >
-        <input
-          className="button"
-          type="button"
-          value="New Game"
-          onClick={() => window.location.reload()}
-        />
-        <input className="button" type="button" value="Undo" onClick={undo} />
+        <button onClick={() => window.location.reload()}>New Game</button>
+        <button onClick={undo}>Undo</button>
       </div>
     </div>
   );
