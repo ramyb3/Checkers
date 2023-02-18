@@ -3,8 +3,69 @@ import { clear } from "./App";
 import React from "react";
 
 export default function StartGame(props) {
+  const kingMaker = (className) => {
+    if (
+      document.getElementById(props.location).className === className ||
+      (props.data[2] > 57 && props.turn === "red") ||
+      (props.data[2] < 8 && props.turn === "green")
+    ) {
+      props.king([props.data[2], props.turn]);
+    }
+  };
+
+  const jumpCalc = (arr, tile) => {
+    document.getElementById(tile).className = "";
+    arr = (props.turn === "red" ? props.green : props.red).filter(
+      (i) => i !== tile
+    );
+
+    if (props.turn === "red") {
+      props.updateGreen(arr);
+    } else {
+      props.updateRed(arr);
+    }
+
+    return arr;
+  };
+
+  const player = () => {
+    const resp = checkKings(
+      false,
+      [],
+      props.turn === "red" ? "kingRed" : "kingGreen"
+    );
+    const mainPlayer = props.turn === "red" ? props.red : props.green;
+    const secondPlayer = props.turn === "red" ? props.green : props.red;
+    const oppositeTurn = props.turn === "red" ? "green" : "red";
+    let jump = checkJumps(false, false, mainPlayer, secondPlayer, props.turn);
+
+    if (resp[0]) {
+      jump = checkJumps(jump, resp[1], mainPlayer, secondPlayer, oppositeTurn);
+    }
+
+    jumps(props.data[2], mainPlayer, secondPlayer, props.turn, true);
+    jumps(props.data[2], mainPlayer, secondPlayer, props.turn, false);
+    moves(jump, props.data[2], mainPlayer, secondPlayer, props.turn, true);
+    moves(jump, props.data[2], mainPlayer, secondPlayer, props.turn, false);
+
+    // if this checker is a king
+    if (
+      (document.getElementById(props.data[2]).className === "kingRed" &&
+        props.turn === "red") ||
+      (document.getElementById(props.data[2]).className === "kingGreen" &&
+        props.turn === "green")
+    ) {
+      jumps(props.data[2], mainPlayer, secondPlayer, oppositeTurn, true);
+      jumps(props.data[2], mainPlayer, secondPlayer, oppositeTurn, false);
+      moves(jump, props.data[2], mainPlayer, secondPlayer, oppositeTurn, true);
+      moves(jump, props.data[2], mainPlayer, secondPlayer, oppositeTurn, false);
+    }
+
+    props.callback(props.data[2]);
+  };
+
   //check must taken jumps
-  const checkJumps = (kings, mainPlayer, secondPlayer, color) => {
+  const checkJumps = (jump, kings, mainPlayer, secondPlayer, color) => {
     const array = kings ? kings : mainPlayer;
 
     for (let i = 0; i < array.length; i++) {
@@ -20,9 +81,11 @@ export default function StartGame(props) {
           document.getElementById(array[i] + (color === "red" ? 14 : -14)) !==
             null)
       ) {
-        return true;
+        jump = true;
       }
     }
+
+    return jump;
   };
 
   //check if there's a king in the game
@@ -40,6 +103,7 @@ export default function StartGame(props) {
     return [king, kingCount];
   };
 
+  //check optional jumps
   const jumps = (data, mainPlayer, secondPlayer, color, direction) => {
     const jump =
       (direction ? (color === "red" ? 14 : -14) : color === "red" ? 18 : -18) +
@@ -67,6 +131,7 @@ export default function StartGame(props) {
     }
   };
 
+  //check optional moves
   const moves = (jump, data, mainPlayer, secondPlayer, color, direction) => {
     const move =
       (direction ? (color === "red" ? 7 : -7) : color === "red" ? 9 : -9) +
@@ -90,16 +155,6 @@ export default function StartGame(props) {
     }
   };
 
-  const kingMaker = (className) => {
-    if (
-      document.getElementById(props.location).className === className ||
-      (props.data[2] > 57 && props.turn === "red") ||
-      (props.data[2] < 8 && props.turn === "green")
-    ) {
-      props.king([props.data[2], props.turn]);
-    }
-  };
-
   // add move to moves array
   const addMove = (className, check) => {
     if (document.getElementById(props.location).className === className) {
@@ -109,97 +164,23 @@ export default function StartGame(props) {
     }
   };
 
-  const jumpCalc = (arr, tile) => {
-    document.getElementById(tile).className = "";
-    arr = (props.turn === "red" ? props.green : props.red).filter(
-      (i) => i !== tile
-    );
-
-    if (props.turn === "red") {
-      props.updateGreen(arr);
-    } else {
-      props.updateRed(arr);
-    }
-
-    return arr;
-  };
-
   const move = (method) => {
-    let jump = false,
-      king = false,
-      kingCount = [];
+    clear();
 
-    clear(); // reset optional moves
-
-    // red player
     if (method === 1 && props.turn === "red") {
-      const resp = checkKings(king, kingCount, "kingRed");
-      king = resp[0] || king;
-      kingCount = resp[1] || kingCount;
-
-      jump = checkJumps(false, props.red, props.green, props.turn) || jump;
-
-      if (king) {
-        jump = checkJumps(kingCount, props.red, props.green, "green") || jump;
-      }
-
-      jumps(props.data[2], props.red, props.green, props.turn, true);
-      jumps(props.data[2], props.red, props.green, props.turn, false);
-
-      moves(jump, props.data[2], props.red, props.green, props.turn, true);
-      moves(jump, props.data[2], props.red, props.green, props.turn, false);
-
-      // if this checker is a king
-      if (document.getElementById(props.data[2]).className === "kingRed") {
-        jumps(props.data[2], props.red, props.green, "green", true);
-        jumps(props.data[2], props.red, props.green, "green", false);
-
-        moves(jump, props.data[2], props.red, props.green, "green", true);
-        moves(jump, props.data[2], props.red, props.green, "green", false);
-      }
-
-      props.callback(props.data[2]);
+      player();
     }
-
-    // green player
     if (method === 2 && props.turn === "green") {
-      const resp = checkKings(king, kingCount, "kingGreen");
-      king = resp[0] || king;
-      kingCount = resp[1] || kingCount;
-
-      jump = checkJumps(false, props.green, props.red, props.turn) || jump;
-
-      if (king) {
-        jump = checkJumps(kingCount, props.green, props.red, "red") || jump;
-      }
-
-      jumps(props.data[2], props.green, props.red, props.turn, true);
-      jumps(props.data[2], props.green, props.red, props.turn, false);
-
-      moves(jump, props.data[2], props.green, props.red, props.turn, true);
-      moves(jump, props.data[2], props.green, props.red, props.turn, false);
-
-      // if this checker is a king
-      if (document.getElementById(props.data[2]).className === "kingGreen") {
-        jumps(props.data[2], props.green, props.red, "red", true);
-        jumps(props.data[2], props.green, props.red, "red", false);
-
-        moves(jump, props.data[2], props.green, props.red, "red", true);
-        moves(jump, props.data[2], props.green, props.red, "red", false);
-      }
-
-      props.callback(props.data[2]);
+      player();
     }
-
-    // moving player
     if (method === 0) {
-      let temp = [],
-        arr = [],
+      // moving player
+      let arr = [],
         check = 0;
 
       kingMaker(props.turn === "red" ? "kingRed" : "kingGreen");
 
-      temp = (props.turn === "red" ? props.red : props.green).filter(
+      let temp = (props.turn === "red" ? props.red : props.green).filter(
         (i) => i !== props.location
       );
       temp.push(props.data[2]);
