@@ -90,7 +90,7 @@ export default function StartGame(props) {
     }
   };
 
-  const kingMaker = (props, className) => {
+  const kingMaker = (className) => {
     if (
       document.getElementById(props.location).className === className ||
       (props.data[2] > 57 && props.turn === "red") ||
@@ -101,7 +101,7 @@ export default function StartGame(props) {
   };
 
   // add move to moves array
-  const addMove = (props, className, check) => {
+  const addMove = (className, check) => {
     if (document.getElementById(props.location).className === className) {
       props.undo([props.location, props.data[2], check, props.turn]);
     } else {
@@ -109,7 +109,22 @@ export default function StartGame(props) {
     }
   };
 
-  const move = (x) => {
+  const jumpCalc = (arr, tile) => {
+    document.getElementById(tile).className = "";
+    arr = (props.turn === "red" ? props.green : props.red).filter(
+      (i) => i !== tile
+    );
+
+    if (props.turn === "red") {
+      props.updateGreen(arr);
+    } else {
+      props.updateRed(arr);
+    }
+
+    return arr;
+  };
+
+  const move = (method) => {
     let jump = false,
       king = false,
       kingCount = [];
@@ -117,7 +132,7 @@ export default function StartGame(props) {
     clear(); // reset optional moves
 
     // red player
-    if (x === 1 && props.turn === "red") {
+    if (method === 1 && props.turn === "red") {
       const resp = checkKings(king, kingCount, "kingRed");
       king = resp[0] || king;
       kingCount = resp[1] || kingCount;
@@ -147,7 +162,7 @@ export default function StartGame(props) {
     }
 
     // green player
-    if (x === 2 && props.turn === "green") {
+    if (method === 2 && props.turn === "green") {
       const resp = checkKings(king, kingCount, "kingGreen");
       king = resp[0] || king;
       kingCount = resp[1] || kingCount;
@@ -177,116 +192,45 @@ export default function StartGame(props) {
     }
 
     // moving player
-    if (x === 0) {
+    if (method === 0) {
       let temp = [],
         arr = [],
         check = 0;
 
-      //red player
-      if (props.red.includes(props.location)) {
-        kingMaker(props, "kingRed");
+      kingMaker(props.turn === "red" ? "kingRed" : "kingGreen");
 
-        temp = props.red.filter((i) => i !== props.location);
-        temp.push(props.data[2]);
+      temp = (props.turn === "red" ? props.red : props.green).filter(
+        (i) => i !== props.location
+      );
+      temp.push(props.data[2]);
 
-        // jump to right
-        if (props.data[2] - props.location === 18) {
-          document.getElementById(props.data[2] - 9).className = "";
+      if (props.data[2] - props.location === 18) {
+        arr = jumpCalc(arr, props.data[2] - 9);
+        check = props.turn === "red" ? 9 : -9;
+      }
+      if (props.location - props.data[2] === 18) {
+        arr = jumpCalc(arr, props.data[2] + 9);
+        check = props.turn === "red" ? -9 : 9;
+      }
+      if (props.data[2] - props.location === 14) {
+        arr = jumpCalc(arr, props.data[2] - 7);
+        check = props.turn === "red" ? 7 : -7;
+      }
+      if (props.location - props.data[2] === 14) {
+        arr = jumpCalc(arr, props.data[2] + 7);
+        check = props.turn === "red" ? -7 : 7;
+      }
 
-          arr = props.green.filter((i) => i !== props.data[2] - 9);
-          props.updateGreen(arr);
+      addMove(props.turn === "red" ? "kingRed" : "kingGreen", check);
 
-          check = 9;
-        }
-
-        // jump to left
-        if (props.data[2] - props.location === 14) {
-          document.getElementById(props.data[2] - 7).className = "";
-
-          arr = props.green.filter((i) => i !== props.data[2] - 7);
-          props.updateGreen(arr);
-
-          check = 7;
-        }
-
-        // jump to right if king
-        if (props.location - props.data[2] === 14) {
-          document.getElementById(props.data[2] + 7).className = "";
-
-          arr = props.green.filter((i) => i !== props.data[2] + 7);
-          props.updateGreen(arr);
-
-          check = -7;
-        }
-
-        // jump to left if king
-        if (props.location - props.data[2] === 18) {
-          document.getElementById(props.data[2] + 9).className = "";
-
-          arr = props.green.filter((i) => i !== props.data[2] + 9);
-          props.updateGreen(arr);
-
-          check = -9;
-        }
-
-        addMove(props, "kingRed", check);
+      if (props.turn === "red") {
         props.updateRed(temp);
-        props.callback(0);
-        props.updateTurn("green");
-      }
-
-      //green player
-      if (props.green.includes(props.location)) {
-        kingMaker(props, "kingGreen");
-
-        temp = props.green.filter((i) => i !== props.location);
-        temp.push(props.data[2]);
-
-        // jump to left
-        if (props.location - props.data[2] === 18) {
-          document.getElementById(props.data[2] + 9).className = "";
-
-          arr = props.red.filter((i) => i !== props.data[2] + 9);
-          props.updateRed(arr);
-
-          check = 9;
-        }
-
-        // jump to right
-        if (props.location - props.data[2] === 14) {
-          document.getElementById(props.data[2] + 7).className = "";
-
-          arr = props.red.filter((i) => i !== props.data[2] + 7);
-          props.updateRed(arr);
-
-          check = 7;
-        }
-
-        // jump to left if king
-        if (props.data[2] - props.location === 14) {
-          document.getElementById(props.data[2] - 7).className = "";
-
-          arr = props.red.filter((i) => i !== props.data[2] - 7);
-          props.updateRed(arr);
-
-          check = -7;
-        }
-
-        // jump to right if king
-        if (props.data[2] - props.location === 18) {
-          document.getElementById(props.data[2] - 9).className = "";
-
-          arr = props.red.filter((i) => i !== props.data[2] - 9);
-          props.updateRed(arr);
-
-          check = -9;
-        }
-
-        addMove(props, "kingGreen", check);
+      } else {
         props.updateGreen(temp);
-        props.callback(0);
-        props.updateTurn("red");
       }
+
+      props.callback(0);
+      props.updateTurn(props.turn === "red" ? "green" : "red");
     }
   };
 
