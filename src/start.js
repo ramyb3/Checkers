@@ -3,6 +3,7 @@ import { clear } from "./App";
 import React from "react";
 
 export default function StartGame(props) {
+  //check must taken jumps
   const checkJumps = (kings, mainPlayer, secondPlayer, color) => {
     const array = kings ? kings : mainPlayer;
 
@@ -24,6 +25,7 @@ export default function StartGame(props) {
     }
   };
 
+  //check if there's a king in the game
   const checkKings = (king, kingCount, className) => {
     for (let i = 1; i < 65; i++) {
       if (
@@ -38,6 +40,56 @@ export default function StartGame(props) {
     return [king, kingCount];
   };
 
+  const jumps = (data, mainPlayer, secondPlayer, color, direction) => {
+    const jump = direction
+      ? data + (color === "red" ? 14 : -14)
+      : data + (color === "red" ? 18 : -18);
+    const move = direction
+      ? data + (color === "red" ? 7 : -7)
+      : data + (color === "red" ? 9 : -9);
+
+    if (
+      !mainPlayer.includes(move) &&
+      !mainPlayer.includes(jump) &&
+      document.getElementById(jump) !== null &&
+      secondPlayer.includes(move) &&
+      !secondPlayer.includes(jump)
+    ) {
+      if ((jump > 57 && color === "red") || (jump < 8 && color === "green")) {
+        document.getElementById(jump).className =
+          color === "red" ? "kingRed" : "kingGreen";
+      } else {
+        document.getElementById(jump).className =
+          document.getElementById(data).className;
+      }
+
+      document.getElementById(jump).style.backgroundColor = "black";
+    }
+  };
+
+  const moves = (jump, data, mainPlayer, secondPlayer, color, direction) => {
+    const move = direction
+      ? data + (color === "red" ? 7 : -7)
+      : data + (color === "red" ? 9 : -9);
+
+    if (
+      !jump &&
+      !mainPlayer.includes(move) &&
+      document.getElementById(move) !== null &&
+      !secondPlayer.includes(move)
+    ) {
+      if ((move > 57 && color === "red") || (move < 8 && color === "green")) {
+        document.getElementById(move).className =
+          color === "red" ? "kingRed" : "kingGreen";
+      } else {
+        document.getElementById(move).className =
+          document.getElementById(data).className;
+      }
+
+      document.getElementById(move).style.backgroundColor = "black";
+    }
+  };
+
   const move = (x) => {
     let jump = false,
       king = false,
@@ -47,143 +99,29 @@ export default function StartGame(props) {
 
     // red player
     if (x === 1 && props.turn === "red") {
-      //check kings
       const resp = checkKings(king, kingCount, "kingRed");
       king = resp[0] || king;
       kingCount = resp[1] || kingCount;
 
-      //check must taken jumps
       jump = checkJumps(false, props.red, props.green, props.turn) || jump;
 
       if (king) {
         jump = checkJumps(kingCount, props.red, props.green, "green") || jump;
       }
 
-      // jump to right
-      if (
-        !props.red.includes(props.data[2] + 9) &&
-        !props.red.includes(props.data[2] + 18) &&
-        document.getElementById(props.data[2] + 18) !== null &&
-        props.green.includes(props.data[2] + 9) &&
-        !props.green.includes(props.data[2] + 18)
-      ) {
-        if (props.data[2] + 18 > 57) {
-          document.getElementById(props.data[2] + 18).className = "kingRed";
-        } else {
-          document.getElementById(props.data[2] + 18).className =
-            document.getElementById(props.data[2]).className;
-        }
+      jumps(props.data[2], props.red, props.green, props.turn, true);
+      jumps(props.data[2], props.red, props.green, props.turn, false);
 
-        document.getElementById(props.data[2] + 18).style.backgroundColor =
-          "black";
-      }
+      moves(jump, props.data[2], props.red, props.green, props.turn, true);
+      moves(jump, props.data[2], props.red, props.green, props.turn, false);
 
-      // jump to left
-      if (
-        !props.red.includes(props.data[2] + 7) &&
-        !props.red.includes(props.data[2] + 14) &&
-        document.getElementById(props.data[2] + 14) !== null &&
-        props.green.includes(props.data[2] + 7) &&
-        !props.green.includes(props.data[2] + 14)
-      ) {
-        if (props.data[2] + 14 > 57) {
-          document.getElementById(props.data[2] + 14).className = "kingRed";
-        } else {
-          document.getElementById(props.data[2] + 14).className =
-            document.getElementById(props.data[2]).className;
-        }
-
-        document.getElementById(props.data[2] + 14).style.backgroundColor =
-          "black";
-      }
-
-      // move to right
-      if (
-        !jump &&
-        !props.red.includes(props.data[2] + 9) &&
-        document.getElementById(props.data[2] + 9) !== null &&
-        !props.green.includes(props.data[2] + 9)
-      ) {
-        if (props.data[2] + 9 > 57) {
-          document.getElementById(props.data[2] + 9).className = "kingRed";
-        } else {
-          document.getElementById(props.data[2] + 9).className =
-            document.getElementById(props.data[2]).className;
-        }
-
-        document.getElementById(props.data[2] + 9).style.backgroundColor =
-          "black";
-      }
-
-      // move to left
-      if (
-        !jump &&
-        !props.red.includes(props.data[2] + 7) &&
-        document.getElementById(props.data[2] + 7) !== null &&
-        !props.green.includes(props.data[2] + 7)
-      ) {
-        if (props.data[2] + 7 > 57) {
-          document.getElementById(props.data[2] + 7).className = "kingRed";
-        } else {
-          document.getElementById(props.data[2] + 7).className =
-            document.getElementById(props.data[2]).className;
-        }
-
-        document.getElementById(props.data[2] + 7).style.backgroundColor =
-          "black";
-      }
-
-      // if this checker is king
+      // if this checker is a king
       if (document.getElementById(props.data[2]).className === "kingRed") {
-        // jump to up-right
-        if (
-          !props.red.includes(props.data[2] - 7) &&
-          !props.red.includes(props.data[2] - 14) &&
-          document.getElementById(props.data[2] - 14) !== null &&
-          props.green.includes(props.data[2] - 7) &&
-          !props.green.includes(props.data[2] - 14)
-        ) {
-          document.getElementById(props.data[2] - 14).className = "kingRed";
-          document.getElementById(props.data[2] - 14).style.backgroundColor =
-            "black";
-        }
+        jumps(props.data[2], props.red, props.green, "green", true);
+        jumps(props.data[2], props.red, props.green, "green", false);
 
-        // jump to up-left
-        if (
-          !props.red.includes(props.data[2] - 9) &&
-          !props.red.includes(props.data[2] - 18) &&
-          document.getElementById(props.data[2] - 18) !== null &&
-          props.green.includes(props.data[2] - 9) &&
-          !props.green.includes(props.data[2] - 18)
-        ) {
-          document.getElementById(props.data[2] - 18).className = "kingRed";
-          document.getElementById(props.data[2] - 18).style.backgroundColor =
-            "black";
-        }
-
-        // move to up-right
-        if (
-          !jump &&
-          !props.red.includes(props.data[2] - 7) &&
-          document.getElementById(props.data[2] - 7) !== null &&
-          !props.green.includes(props.data[2] - 7)
-        ) {
-          document.getElementById(props.data[2] - 7).className = "kingRed";
-          document.getElementById(props.data[2] - 7).style.backgroundColor =
-            "black";
-        }
-
-        // move to up-left
-        if (
-          !jump &&
-          !props.red.includes(props.data[2] - 9) &&
-          document.getElementById(props.data[2] - 9) !== null &&
-          !props.green.includes(props.data[2] - 9)
-        ) {
-          document.getElementById(props.data[2] - 9).className = "kingRed";
-          document.getElementById(props.data[2] - 9).style.backgroundColor =
-            "black";
-        }
+        moves(jump, props.data[2], props.red, props.green, "green", true);
+        moves(jump, props.data[2], props.red, props.green, "green", false);
       }
 
       props.callback(props.data[2]);
@@ -191,143 +129,29 @@ export default function StartGame(props) {
 
     // green player
     if (x === 2 && props.turn === "green") {
-      //check kings
       const resp = checkKings(king, kingCount, "kingGreen");
       king = resp[0] || king;
       kingCount = resp[1] || kingCount;
 
-      //check must taken jumps
       jump = checkJumps(false, props.green, props.red, props.turn) || jump;
 
       if (king) {
         jump = checkJumps(kingCount, props.green, props.red, "red") || jump;
       }
 
-      // jump to right
-      if (
-        !props.green.includes(props.data[2] - 7) &&
-        !props.green.includes(props.data[2] - 14) &&
-        document.getElementById(props.data[2] - 14) !== null &&
-        props.red.includes(props.data[2] - 7) &&
-        !props.red.includes(props.data[2] - 14)
-      ) {
-        if (props.data[2] - 14 < 8) {
-          document.getElementById(props.data[2] - 14).className = "kingGreen";
-        } else {
-          document.getElementById(props.data[2] - 14).className =
-            document.getElementById(props.data[2]).className;
-        }
+      jumps(props.data[2], props.green, props.red, props.turn, true);
+      jumps(props.data[2], props.green, props.red, props.turn, false);
 
-        document.getElementById(props.data[2] - 14).style.backgroundColor =
-          "black";
-      }
+      moves(jump, props.data[2], props.green, props.red, props.turn, true);
+      moves(jump, props.data[2], props.green, props.red, props.turn, false);
 
-      // jump to left
-      if (
-        !props.green.includes(props.data[2] - 9) &&
-        !props.green.includes(props.data[2] - 18) &&
-        document.getElementById(props.data[2] - 18) !== null &&
-        props.red.includes(props.data[2] - 9) &&
-        !props.red.includes(props.data[2] - 18)
-      ) {
-        if (props.data[2] - 18 < 8) {
-          document.getElementById(props.data[2] - 18).className = "kingGreen";
-        } else {
-          document.getElementById(props.data[2] - 18).className =
-            document.getElementById(props.data[2]).className;
-        }
-
-        document.getElementById(props.data[2] - 18).style.backgroundColor =
-          "black";
-      }
-
-      // move to right
-      if (
-        !jump &&
-        !props.green.includes(props.data[2] - 7) &&
-        document.getElementById(props.data[2] - 7) !== null &&
-        !props.red.includes(props.data[2] - 7)
-      ) {
-        if (props.data[2] - 7 < 8) {
-          document.getElementById(props.data[2] - 7).className = "kingGreen";
-        } else {
-          document.getElementById(props.data[2] - 7).className =
-            document.getElementById(props.data[2]).className;
-        }
-
-        document.getElementById(props.data[2] - 7).style.backgroundColor =
-          "black";
-      }
-
-      // move to left
-      if (
-        !jump &&
-        !props.green.includes(props.data[2] - 9) &&
-        document.getElementById(props.data[2] - 9) !== null &&
-        !props.red.includes(props.data[2] - 9)
-      ) {
-        if (props.data[2] - 9 < 8) {
-          document.getElementById(props.data[2] - 9).className = "kingGreen";
-        } else {
-          document.getElementById(props.data[2] - 9).className =
-            document.getElementById(props.data[2]).className;
-        }
-
-        document.getElementById(props.data[2] - 9).style.backgroundColor =
-          "black";
-      }
-
-      // if this checker is king
+      // if this checker is a king
       if (document.getElementById(props.data[2]).className === "kingGreen") {
-        // jump to down-right
-        if (
-          !props.green.includes(props.data[2] + 9) &&
-          !props.green.includes(props.data[2] + 18) &&
-          document.getElementById(props.data[2] + 18) !== null &&
-          props.red.includes(props.data[2] + 9) &&
-          !props.red.includes(props.data[2] + 18)
-        ) {
-          document.getElementById(props.data[2] + 18).className = "kingGreen";
-          document.getElementById(props.data[2] + 18).style.backgroundColor =
-            "black";
-        }
+        jumps(props.data[2], props.green, props.red, "red", true);
+        jumps(props.data[2], props.green, props.red, "red", false);
 
-        // jump to down-left
-        if (
-          !props.green.includes(props.data[2] + 7) &&
-          !props.green.includes(props.data[2] + 14) &&
-          document.getElementById(props.data[2] + 14) !== null &&
-          props.red.includes(props.data[2] + 7) &&
-          !props.red.includes(props.data[2] + 14)
-        ) {
-          document.getElementById(props.data[2] + 14).className = "kingGreen";
-          document.getElementById(props.data[2] + 14).style.backgroundColor =
-            "black";
-        }
-
-        // move to down-right
-        if (
-          !jump &&
-          !props.green.includes(props.data[2] + 9) &&
-          document.getElementById(props.data[2] + 9) !== null &&
-          !props.red.includes(props.data[2] + 9)
-        ) {
-          document.getElementById(props.data[2] + 9).className = "kingGreen";
-          document.getElementById(props.data[2] + 9).style.backgroundColor =
-            "black";
-        }
-
-        // move to down-left
-        if (
-          !jump &&
-          !props.green.includes(props.data[2] + 7) &&
-          document.getElementById(props.data[2] + 7) !== null &&
-          !props.red.includes(props.data[2] + 7)
-        ) {
-          document.getElementById(props.data[2] + 7).className = "kingGreen";
-          document.getElementById(props.data[2] + 7).style.backgroundColor =
-            "black";
-        }
+        moves(jump, props.data[2], props.green, props.red, "red", true);
+        moves(jump, props.data[2], props.green, props.red, "red", false);
       }
 
       props.callback(props.data[2]);

@@ -63,6 +63,24 @@ export default function App() {
     setGreen(check2);
   }, []);
 
+  // every move
+  React.useEffect(() => {
+    let flag = false;
+
+    if (moves.length !== 0 && red.length === 0) {
+      alert("Green Player Won!");
+      flag = true;
+    }
+    if (moves.length !== 0 && green.length === 0) {
+      alert("Red Player Won!");
+      flag = true;
+    }
+
+    if (flag) {
+      window.location.reload();
+    }
+  }, [moves]);
+
   const undo = () => {
     clear(); // reset optional moves
 
@@ -86,11 +104,8 @@ export default function App() {
   };
 
   const checkUndo = (color) => {
-    let arr = [];
-
-    arr = (color === "red" ? red : green).filter(
-      (x) => x !== moves[moves.length - 1][1]
-    );
+    let arr = color === "red" ? red : green;
+    arr = arr.filter((x) => x !== moves[moves.length - 1][1]);
     arr.push(moves[moves.length - 1][0]);
 
     if (color === "red") {
@@ -102,7 +117,12 @@ export default function App() {
     // if was a jump move
     if (moves[moves.length - 1][2] !== 0) {
       arr = color === "red" ? green : red;
-      arr.push(moves[moves.length - 1][1] - moves[moves.length - 1][2]);
+      arr.push(
+        moves[moves.length - 1][1] +
+          (color === "red"
+            ? -moves[moves.length - 1][2]
+            : moves[moves.length - 1][2])
+      );
 
       if (color === "red") {
         setGreen(arr);
@@ -122,24 +142,6 @@ export default function App() {
       document.getElementById(x[0]).className = "kingGreen";
     }
   };
-
-  // every move
-  React.useEffect(() => {
-    let flag = false;
-
-    if (moves.length !== 0 && red.length === 0) {
-      alert("Green Player Won!");
-      flag = true;
-    }
-    if (moves.length !== 0 && green.length === 0) {
-      alert("Red Player Won!");
-      flag = true;
-    }
-
-    if (flag) {
-      window.location.reload();
-    }
-  }, [moves]);
 
   return (
     <div style={{ textAlign: "center" }}>
