@@ -177,7 +177,7 @@ export default function StartGame(props) {
 
       kingMaker(`king ${props.turn === "red" ? "redColor" : "greenColor"}`);
 
-      let newArray = (props.turn === "red" ? props.red : props.green).filter(
+      const newArray = (props.turn === "red" ? props.red : props.green).filter(
         (i) => i !== props.location
       );
       newArray.push(props.data[2]);
@@ -215,59 +215,45 @@ export default function StartGame(props) {
     }
   };
 
-  return (
+  return props.data[1] === "black" ? ( // black tile
     <>
-      {
-        props.data[1] === "black" ? ( // black tile
-          <>
-            <>
-              {props.red.includes(props.data[2]) ? (
-                <Player
-                  id={props.data[2]}
-                  className={`${
-                    document.getElementById(props.data[2]) !== null &&
-                    document.getElementById(props.data[2]).className ===
-                      "king redColor"
-                      ? "king"
-                      : "checker"
-                  } redColor`}
-                  onClick={() => move(1)}
-                />
-              ) : null}
-            </>
-
-            <>
-              {props.green.includes(props.data[2]) ? (
-                <Player
-                  id={props.data[2]}
-                  className={`${
-                    document.getElementById(props.data[2]) !== null &&
-                    document.getElementById(props.data[2]).className ===
-                      "king greenColor"
-                      ? "king"
-                      : "checker"
-                  } greenColor`}
-                  onClick={() => move(2)}
-                />
-              ) : null}
-            </>
-
-            <>
-              {!props.green.includes(props.data[2]) &&
-              !props.red.includes(props.data[2]) ? (
-                <Player
-                  id={props.data[2]}
-                  style={{ display: "inline-flex", height: "40px" }}
-                  onClick={() => move(0)}
-                />
-              ) : null}
-            </>
-          </>
-        ) : (
-          <span style={{ display: "inline-flex", height: "40px" }}></span>
-        ) // white tile
-      }
+      {props.red.includes(props.data[2]) ? (
+        <Player
+          id={props.data[2]}
+          className={`${
+            document.getElementById(props.data[2]) !== null &&
+            document.getElementById(props.data[2]).className === "king redColor"
+              ? "king"
+              : "checker"
+          } redColor`}
+          onClick={() => move(1)}
+        />
+      ) : null}
+      {props.green.includes(props.data[2]) ? (
+        <Player
+          id={props.data[2]}
+          className={`${
+            document.getElementById(props.data[2]) !== null &&
+            document.getElementById(props.data[2]).className ===
+              "king greenColor"
+              ? "king"
+              : "checker"
+          } greenColor`}
+          onClick={() => move(2)}
+        />
+      ) : null}
+      {!props.green.includes(props.data[2]) &&
+      !props.red.includes(props.data[2]) ? (
+        <Player
+          id={props.data[2]}
+          style={{ display: "inline-flex", height: "40px" }}
+          onClick={() => move(0)}
+        />
+      ) : null}
     </>
+  ) : (
+    // white tile
+    <span style={{ display: "inline-flex", height: "40px" }}></span>
   );
 }
 

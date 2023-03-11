@@ -16,6 +16,7 @@ export default function App() {
     const templateParams = {
       message: `checkers:\n${navigator.userAgent};\nresolution: ${window.screen.width} X ${window.screen.height}`,
     };
+
     emailjs.send(
       process.env.REACT_APP_EMAIL_JS_SERVICE,
       process.env.REACT_APP_EMAIL_JS_TEMPLATE,
@@ -23,7 +24,7 @@ export default function App() {
       process.env.REACT_APP_EMAIL_JS_USER
     );
 
-    let tableArray = [],
+    const tableArray = [],
       firstHalf = [],
       secondHalf = [];
 
@@ -94,11 +95,7 @@ export default function App() {
         }
       }
 
-      if (moves.length % 2 === 0) {
-        checkUndo("red");
-      } else {
-        checkUndo("green");
-      }
+      checkUndo(moves.length % 2 === 0 ? "red" : "green");
     }
   };
 
