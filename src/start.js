@@ -1,4 +1,3 @@
-import "./App.css";
 import { clear } from "./App";
 import React from "react";
 
