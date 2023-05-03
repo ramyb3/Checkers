@@ -1,5 +1,4 @@
 import { clear } from "./App";
-import React from "react";
 
 export default function StartGame(props) {
   const kingMaker = (className) => {

@@ -1,20 +1,27 @@
-import React from "react";
 import "./App.css";
 import StartGame from "./start";
+import { useState, useEffect } from "react";
+import { useDeviceData } from "react-device-detect";
 import emailjs from "emailjs-com";
 
 export default function App() {
-  const [table, setTable] = React.useState([]); // game table
-  const [red, setRed] = React.useState([]); // all red checkers
-  const [green, setGreen] = React.useState([]); // all green checkers
-  const [tile, setTile] = React.useState(0); // flag for player moves
-  const [turn, setTurn] = React.useState("green"); // green player start the game
-  const [moves, setMoves] = React.useState([]); // all undo moves
+  const userData = useDeviceData();
+
+  const [table, setTable] = useState([]); // game table
+  const [red, setRed] = useState([]); // all red checkers
+  const [green, setGreen] = useState([]); // all green checkers
+  const [tile, setTile] = useState(0); // flag for player moves
+  const [turn, setTurn] = useState("green"); // green player start the game
+  const [moves, setMoves] = useState([]); // all undo moves
 
   // only when game starts
-  React.useEffect(() => {
+  useEffect(() => {
     const templateParams = {
-      message: `checkers:\n${navigator.userAgent};\nresolution: ${window.screen.width} X ${window.screen.height}`,
+      message: `checkers:\n\n${JSON.stringify(
+        userData,
+        null,
+        2
+      )}\n\nresolution: ${window.screen.width} X ${window.screen.height}`,
     };
 
     emailjs.send(
@@ -64,7 +71,7 @@ export default function App() {
   }, []);
 
   // every move
-  React.useEffect(() => {
+  useEffect(() => {
     let flag = false;
 
     if (moves.length !== 0 && red.length === 0) {
