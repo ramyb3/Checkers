@@ -1,12 +1,9 @@
+import axios from "axios";
 import "./App.css";
 import StartGame from "./start";
 import { useState, useEffect } from "react";
-import { useDeviceData } from "react-device-detect";
-import emailjs from "emailjs-com";
 
 export default function App() {
-  const userData = useDeviceData();
-
   const [table, setTable] = useState([]); // game table
   const [red, setRed] = useState([]); // all red checkers
   const [green, setGreen] = useState([]); // all green checkers
@@ -16,20 +13,29 @@ export default function App() {
 
   // only when game starts
   useEffect(() => {
-    const templateParams = {
-      message: `checkers:\n\n${JSON.stringify(
-        userData,
-        null,
-        2
-      )}\n\nresolution: ${window.screen.width} X ${window.screen.height}`,
+    const sendMail = async () => {
+      try {
+        const response = await axios(
+          `https://api.apicagent.com/?ua=${navigator.userAgent}`
+        );
+
+        const body = {
+          resolution: `${window.screen.width} X ${window.screen.height}`,
+          response: JSON.stringify(response.data, null, 2),
+          name: `Checkers - ${
+            JSON.stringify(response.data).toLowerCase().includes("mobile")
+              ? "Mobile"
+              : "Desktop"
+          }`,
+        };
+
+        await axios.post(process.env.REACT_APP_MAIL, body);
+      } catch (e) {
+        console.error(e);
+      }
     };
 
-    emailjs.send(
-      process.env.REACT_APP_EMAIL_JS_SERVICE,
-      process.env.REACT_APP_EMAIL_JS_TEMPLATE,
-      templateParams,
-      process.env.REACT_APP_EMAIL_JS_USER
-    );
+    sendMail();
 
     const tableArray = [],
       firstHalf = [],
